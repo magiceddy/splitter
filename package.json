@@ -16,5 +16,8 @@
     "Blockchain"
   ],
   "author": "Rinaldo Rossi",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.5.1"
+  }
 }
