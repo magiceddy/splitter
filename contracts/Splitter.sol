@@ -1,4 +1,4 @@
-pragma solidity 0.4.21;
+pragma solidity 0.4.19;
 
 
 contract Splitter {
@@ -35,8 +35,8 @@ contract Splitter {
 
         assert(address(this).balance == 0);
         
-        emit LogSplit(
-            msg.sender indexed, 
+        LogSplit(
+            msg.sender, 
             firstBeneficiary, 
             secondBeneficiary, 
             amountPerSingleUser
