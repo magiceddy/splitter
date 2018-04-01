@@ -5,7 +5,12 @@ contract Splitter {
 
     address public owner;
 
-    event LogSplit(address from, address firstBeneficiary, address secondBeneficiary, uint256 amount);
+    event LogSplit(
+        address indexed from, 
+        address indexed firstBeneficiary, 
+        address indexed secondBeneficiary,
+        uint256 amount
+    );
 
     function Splitter() public payable {
         owner = msg.sender;
@@ -31,7 +36,7 @@ contract Splitter {
         assert(address(this).balance == 0);
         
         emit LogSplit(
-            msg.sender, 
+            msg.sender indexed, 
             firstBeneficiary, 
             secondBeneficiary, 
             amountPerSingleUser
