@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "migrateNet42": "truffle migrate --network net42 --reset"
+    "migrateNet42": "truffle migrate --network net42 --reset",
+    "ganache": "ganache-cli --accounts=3"
   },
   "keywords": [
     "Ethereum",
