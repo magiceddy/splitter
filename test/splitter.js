@@ -20,8 +20,21 @@ contract('Splitter', async accounts => {
         assert.strictEqual(owner, contractOwner, 'The creator is not the owner');
     });
 
+    describe('split function', async () => {
 
+        describe('fail cases', async () => {
 
+            it("should fail with 0 value", async () => {
+                let hasSplit;
+                
+                try {
+                    hasSplit = await instance.split(beneficiary1, beneficiary2, { from: owner });
+                } catch (e) {
+                    assert.include(e.message, 'revert', 'no revert with 0 value call');
+                    assert.isUndefined(hasSplit, 'with 0 value split return something');
+                }
+            });
 
-    
+        });
+    });
 });
