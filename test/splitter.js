@@ -3,20 +3,12 @@ const Splitter = artifacts.require("./Splitter.sol");
 
 Promise.promisifyAll(web3.eth, { suffix: "Promise" });
 
-const bigNumberConverter = _bigNumber => 
-    web3.toBigNumber(_bigNumber).toString(10);
-
 contract('Splitter', async accounts => {
 
     // addresses
     const sender = accounts[0];
     const firstBeneficiary = accounts[1];
     const secondBeneficiary = accounts[2];
-
-    // balances
-    const senderInitialBalance = bigNumberConverter(web3.eth.getBalance(sender));
-
-    console.log(senderInitialBalance);
 
     let instance;
     let hasSplit;
@@ -84,31 +76,71 @@ contract('Splitter', async accounts => {
         describe('success case', async () => {
 
             const value = 10;
-            let txObject;
+            const amountPerSingleUser = value / 2;
 
-            beforeEach(async () => {
-                txObject = await instance.split(firstBeneficiary, secondBeneficiary, { value, from: sender });
-            });
-            
-            it('should return true', async () => {
-                hasSplit = await instance.split.call(firstBeneficiary, secondBeneficiary, { value, from: sender });
-                assert.isTrue(hasSplit, 'split doesn\' return true');
-            });
+            describe('call', async () => {
 
-            it('should log LogSplit', async () => {
-                const logs = txObject.logs;
-                const firstLogArgs = logs[0].args;
-                const amountPerSingleUser = bigNumberConverter(firstLogArgs.amount);
-
-                assert.strictEqual(logs.length, 1, 'incorrect number of logs');
-                assert.strictEqual(firstLogArgs.from, sender, 'sender is not correct in log');
-                assert.strictEqual(firstLogArgs.firstBeneficiary, firstBeneficiary, 'firstBeneficiary is not correct in log');
-                assert.strictEqual(firstLogArgs.secondBeneficiary, secondBeneficiary, 'secondBeneficiary is not correct in log');
-                assert.equal(amountPerSingleUser, value / 2, 'amount per single user is incorrect');
+                it('should return true', async () => {
+                    gas = web3.eth.estimateGas(instance.split.call(firstBeneficiary, secondBeneficiary, { value, from: sender }))
+                    hasSplit = await instance.split.call(firstBeneficiary, secondBeneficiary, { gas, value, from: sender });
+                    
+                    assert.isTrue(hasSplit, 'split doesn\' return true');
+                });
             });
 
-            it('should update balances', async () => {
+            describe('transaction', async () => {
+                
+                
 
+                it('should have correct balances', async () => {
+                    // initial balances
+                    const initialSenderBalance = await web3.eth.getBalance(sender);
+                    const initialFirstBeneficiaryBalance = await web3.eth.getBalance(firstBeneficiary);
+                    const initialSecondBeneficiaryBalance = await web3.eth.getBalance(secondBeneficiary);
+
+                    const txObject = await instance.split(firstBeneficiary, secondBeneficiary, { value, from: sender });
+                    
+                    // calculate txFee
+                    const gasUsed = txObject.receipt.gasUsed;
+                    const transaction = await web3.eth.getTransaction(txObject.tx);
+                    const gasPrice = transaction.gasPrice;
+                    const txFee = gasPrice.times(gasUsed);
+    
+                    // current balances
+                    const currentSenderBalance = await web3.eth.getBalance(sender);
+                    const currentFirstBeneficiaryBalance = await web3.eth.getBalance(firstBeneficiary);
+                    const currentSecondBeneficiaryBalance = await web3.eth.getBalance(secondBeneficiary);
+                                    
+                    
+                    assert.equal(
+                        currentSenderBalance.plus(txFee).plus(value).toString(10), 
+                        initialSenderBalance,
+                        'transfered more than value'
+                    );
+                    assert.equal(
+                        currentFirstBeneficiaryBalance.minus(amountPerSingleUser).toString(10),
+                        initialFirstBeneficiaryBalance,
+                        'first beneficiary hasn\'t correct balance'
+                    );
+                    assert.equal(
+                        currentSecondBeneficiaryBalance.minus(amountPerSingleUser).toString(10),
+                        initialSecondBeneficiaryBalance,
+                        'second beneficiary hasn\'t correct balance'
+                    );
+                });
+
+                it('should log LogSplit', async () => {
+                    const txObject = await instance.split(firstBeneficiary, secondBeneficiary, { value, from: sender });
+                    const logs = txObject.logs;
+                    const firstLogArgs = logs[0].args;
+                    const amountPerSingleUser = web3.toBigNumber(firstLogArgs.amount).toString(10);
+    
+                    assert.strictEqual(logs.length, 1, 'incorrect number of logs');
+                    assert.strictEqual(firstLogArgs.from, sender, 'sender is not correct in log');
+                    assert.strictEqual(firstLogArgs.firstBeneficiary, firstBeneficiary, 'firstBeneficiary is not correct in log');
+                    assert.strictEqual(firstLogArgs.secondBeneficiary, secondBeneficiary, 'secondBeneficiary is not correct in log');
+                    assert.equal(amountPerSingleUser, amountPerSingleUser, 'amount per single user is incorrect');
+                });
             });
         });
     });
