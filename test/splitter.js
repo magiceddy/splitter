@@ -91,6 +91,7 @@ contract('Splitter', async accounts => {
             describe('transaction', async () => {
                 
                 it('should have correct balances', async () => {
+
                     // initial balances
                     const initialSenderBalance = await web3.eth.getBalance(sender);
                     const initialFirstBeneficiaryBalance = await web3.eth.getBalance(firstBeneficiary);
@@ -108,8 +109,9 @@ contract('Splitter', async accounts => {
                     const currentSenderBalance = await web3.eth.getBalance(sender);
                     const currentFirstBeneficiaryBalance = await web3.eth.getBalance(firstBeneficiary);
                     const currentSecondBeneficiaryBalance = await web3.eth.getBalance(secondBeneficiary);
-                                    
+                    const currentInstanceBalance = await web3.eth.getBalance(instance.address);
                     
+                    assert.equal(currentInstanceBalance, 0, 'Splitter has no 0 balance');                    
                     assert.equal(
                         currentSenderBalance.plus(txFee).plus(value).toString(10), 
                         initialSenderBalance,
