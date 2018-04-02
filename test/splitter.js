@@ -29,14 +29,22 @@ contract('Splitter', async accounts => {
             it("should fail with 0 value", async () => {                
                 try {
                     hasSplit = await instance.split(beneficiary1, beneficiary2, { from: owner });
-                } catch (e) {
-                    assert.include(e.message, 'revert', 'no revert with 0 value call');
+                } catch (err) {
+                    assert.include(err.message, 'revert', 'no revert with 0 value');
                     assert.isUndefined(hasSplit, 'with 0 value split return something');
                 }
             });
 
             it('should fail with odd value', async () => {
+                try {
+                    hasSplit = await instance.split(beneficiary1, beneficiary2, { value: 3 });
+                } catch (err) {
+                    assert.include(err.message, 'revert', 'no revert with odd value');
+                    assert.isUndefined(hasSplit, 'with odd value split return something');
+                }
             });
+
+            it('should fail if sender is beneficiary1', async() => {});
         });
     });
 });
