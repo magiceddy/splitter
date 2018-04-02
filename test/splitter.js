@@ -44,7 +44,14 @@ contract('Splitter', async accounts => {
                 }
             });
 
-            it('should fail if sender is beneficiary1', async() => {});
+            it('should fail if sender is beneficiary1', async() => {
+                try {
+                    hasSplit = await instance.split(beneficiary1, beneficiary2, { value: 2, from: beneficiary1 });
+                } catch (err) {
+                    assert.include(err.message, 'revert', 'no revert if sender is the first beneficiary');
+                    assert.isUndefined(hasSplit, 'if sender is the first beneficiary split return something');
+                }
+            });
         });
     });
 });
