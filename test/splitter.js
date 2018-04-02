@@ -6,14 +6,16 @@ Promise.promisifyAll(web3.eth, { suffix: "Promise" });
 contract('Splitter', async accounts => {
 
     let instance;
+    let hasSplit;
 
     const owner = accounts[0];
     const beneficiary1 = accounts[1];
     const beneficiary2 = accounts[2];
 
-    beforeEach(async () => 
-        instance = await Splitter.deployed()
-    );
+    beforeEach(async () => {
+        instance = await Splitter.deployed();
+        hasSplit = undefined;
+    });
 
     it('should set the correct owner', async () => {
         const contractOwner = await instance.owner();
@@ -24,9 +26,7 @@ contract('Splitter', async accounts => {
 
         describe('fail cases', async () => {
 
-            it("should fail with 0 value", async () => {
-                let hasSplit;
-                
+            it("should fail with 0 value", async () => {                
                 try {
                     hasSplit = await instance.split(beneficiary1, beneficiary2, { from: owner });
                 } catch (e) {
@@ -35,6 +35,8 @@ contract('Splitter', async accounts => {
                 }
             });
 
+            it('should fail with odd value', async () => {
+            });
         });
     });
 });
