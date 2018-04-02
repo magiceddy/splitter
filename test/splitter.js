@@ -3,11 +3,20 @@ const Splitter = artifacts.require("./Splitter.sol");
 
 Promise.promisifyAll(web3.eth, { suffix: "Promise" });
 
+const bigNumberConverter = _bigNumber => 
+    web3.toBigNumber(_bigNumber).toString(10);
+
 contract('Splitter', async accounts => {
 
+    // addresses
     const sender = accounts[0];
     const firstBeneficiary = accounts[1];
     const secondBeneficiary = accounts[2];
+
+    // balances
+    const senderInitialBalance = bigNumberConverter(web3.eth.getBalance(sender));
+
+    console.log(senderInitialBalance);
 
     let instance;
     let hasSplit;
@@ -89,7 +98,7 @@ contract('Splitter', async accounts => {
             it('should log LogSplit', async () => {
                 const logs = txObject.logs;
                 const firstLogArgs = logs[0].args;
-                const amountPerSingleUser = web3.toBigNumber(firstLogArgs.amount).toString(10);
+                const amountPerSingleUser = bigNumberConverter(firstLogArgs.amount);
 
                 assert.strictEqual(logs.length, 1, 'incorrect number of logs');
                 assert.strictEqual(firstLogArgs.from, sender, 'sender is not correct in log');
@@ -99,7 +108,7 @@ contract('Splitter', async accounts => {
             });
 
             it('should update balances', async () => {
-                
+
             });
         });
     });
