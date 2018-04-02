@@ -90,8 +90,6 @@ contract('Splitter', async accounts => {
 
             describe('transaction', async () => {
                 
-                
-
                 it('should have correct balances', async () => {
                     // initial balances
                     const initialSenderBalance = await web3.eth.getBalance(sender);
