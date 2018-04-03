@@ -5,17 +5,16 @@ const Splitter = require('../../build/contracts/Splitter.json');
 const contract = require('truffle-contract');
 const Web3 = require('web3'); 
 
-let web3;
+let web3 = window.web3;
 let accounts;
-let currAddress;
 let instance;
 
 const splitter = contract(Splitter); 
 
 window.App = {
     start: async function() {
-
         splitter.setProvider(web3.currentProvider);
+        
         this.instance = await splitter.deployed();
         this.startConfig();
         this.registerEvents();
