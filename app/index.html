@@ -20,20 +20,41 @@
     <div class="row">
         <div class="col-xs-2"><b>Sender:</b></div>
         <div class="col-xs-3">
-            <input class="addInputStyle" id="coinbase" name="Sender Address">
+            <input 
+                class="addInputStyle" 
+                id="coinbase" 
+                name="Sender Address" 
+                onchange="App.onAddressChange(this)"
+            >
         </div>
+        <div class="col-xs-2 col-xs-offset-2"><b>Balance:</b></div>
+        <div class="col-xs-3"><p id="senderBalance"><b></b></p></div>
     </div>
     <div class="row">
         <div class="col-xs-2"><b>First Beneficiary:</b></div>
         <div class="col-xs-3">
-            <input class="addInputStyle" id="firstBeneficiary" name="First Beneficiary">
+            <input 
+                class="addInputStyle" 
+                id="firstBeneficiary" 
+                name="First Beneficiary"
+                onchange="App.onAddressChange(this)"
+            >
         </div>
+        <div class="col-xs-2 col-xs-offset-2"><b>Balance:</b></div>
+        <div class="col-xs-3"><p id="firstBalance"><b></b></p></div>
     </div>
     <div class="row">
         <div class="col-xs-2"><b>Second Beneficiary:</b></div>
         <div class="col-xs-3">
-            <input class="addInputStyle" id="secondBeneficiary" name="Second Beneficiary">
+            <input 
+                class="addInputStyle" 
+                id="secondBeneficiary" 
+                name="Second Beneficiary"
+                onchange="App.onAddressChange(this)"
+            >
         </div>
+        <div class="col-xs-2 col-xs-offset-2"><b>Balance:</b></div>
+        <div class="col-xs-3"><p id="secondBalance"><b></b></p></div>
     </div>
     <div class="row">
         <div class="col-xs-2"><b>Amount:</b></div>
@@ -41,7 +62,7 @@
             <input id="amount" name="amount" value="Amount in ETH" type="number">
         </div>
         <div class="col-xs-3 end-xs">
-                <button onclick="Appx.send()">Send amount</button>
+                <button onclick="App.send()">Send amount</button>
            </div> 
     </div>
 </body>
