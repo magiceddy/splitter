@@ -1,6 +1,9 @@
+import '../stylesheet/app.css';
+import 'flexboxgrid/css/flexboxgrid.css';
+
 const Splitter = require('../../build/contracts/Splitter.json');
 const contract = require('truffle-contract');
-const Web3 = require('web3');
+const Web3 = require('web3'); 
 
 let accounts;
 let currAddress;
@@ -29,7 +32,7 @@ window.App = {
 
         document.getElementById('coinbase').value = this.coinbase;
         document.getElementById('amount').value = '';
-        
+
         return web3.version.network == 3 ? 
             self.configForRopsten() : 
             this.configForTestRpc();
