@@ -5,6 +5,7 @@ const Splitter = require('../../build/contracts/Splitter.json');
 const contract = require('truffle-contract');
 const Web3 = require('web3'); 
 
+let web3;
 let accounts;
 let currAddress;
 let instance;
@@ -31,7 +32,7 @@ window.App = {
         this.coinbase = web3.eth.coinbase;
 
         document.getElementById('coinbase').value = this.coinbase;
-        document.getElementById('amount').value = '';
+        document.getElementById('amount').value = 'Ether';
 
         return web3.version.network == 3 ? 
             self.configForRopsten() : 
@@ -39,9 +40,11 @@ window.App = {
     },
     configForRopsten: function() {},
     configForTestRpc: function() {
-        accounts = web3.eth.accounts;
-        document.getElementById('firstBeneficiary').value = accounts[1];
-        document.getElementById('secondBeneficiary').value = accounts[2];
+        this.accounts = web3.eth.accounts;
+
+        document.getElementById('firstBeneficiary').value = this.accounts[1];
+        document.getElementById('secondBeneficiary').value =this.accounts[2];
+        document.getElementById('network').innerText = "Network: Local TestRpc";
     }
 };
 

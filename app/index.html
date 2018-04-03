@@ -10,13 +10,39 @@
 </head>
 <body>
     <div class="row">
-        <div class="col-xs-12 center-xs">
-            <input id="coinbase" name="Sender Address">
-            <input id="firstBeneficiary" name="First Beneficiary">
-            <input id="secondBeneficiary" name="Second Beneficiary">
-            <input id="amount" name="amount" value="Amount in ETH">
-            <button onclick="Appx.send()">Send amount</button>
+        <div class="col-xs-4 col-xs-offset-5">
+            <h1>B9Lab Splitter</h1>
         </div>
+        <div class="col-xs-3">
+            <h3 id="network"></h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-2"><b>Sender:</b></div>
+        <div class="col-xs-3">
+            <input class="addInputStyle" id="coinbase" name="Sender Address">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-2"><b>First Beneficiary:</b></div>
+        <div class="col-xs-3">
+            <input class="addInputStyle" id="firstBeneficiary" name="First Beneficiary">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-2"><b>Second Beneficiary:</b></div>
+        <div class="col-xs-3">
+            <input class="addInputStyle" id="secondBeneficiary" name="Second Beneficiary">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-2"><b>Amount:</b></div>
+        <div class="col-xs-3">
+            <input id="amount" name="amount" value="Amount in ETH" type="number">
+        </div>
+        <div class="col-xs-3 end-xs">
+                <button onclick="Appx.send()">Send amount</button>
+           </div> 
     </div>
 </body>
 </html>
