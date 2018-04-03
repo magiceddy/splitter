@@ -10,17 +10,35 @@ const splitter = contract(Splitter);
 
 window.App = {
     start: async function() {
-        const self = this;
-        accounts = web3.eth.accounts;
-        coinbase = web3.eth.coinbase;
 
-        console.log(web3.currentProvider);
+        this.startConfig();
         splitter.setProvider(web3.currentProvider);
         instance = await splitter.deployed();
     },
     send: async function() {
-        let txObject = await instance.split(accounts[1], accounts[2], { from: coinbase, value: 10 });
-        console.log(txObject);
+        const sender = document.getElementById('coinbase').value;
+        const ben1 = document.getElementById('firstBeneficiary').value;
+        const ben2 = document.getElementById('secondBeneficiary').value;
+        const amount = web3.toBigNumber(document.getElementById('amount').value);
+        const amountInWei = web3.toWei(amount, 'ether');
+
+        let txObject = await instance.split(ben1, ben2, { from: sender, value: amountInWei });
+    },
+    startConfig: function() {
+        this.coinbase = web3.eth.coinbase;
+
+        document.getElementById('coinbase').value = this.coinbase;
+        document.getElementById('amount').value = '';
+        
+        return web3.version.network == 3 ? 
+            self.configForRopsten() : 
+            this.configForTestRpc();
+    },
+    configForRopsten: function() {},
+    configForTestRpc: function() {
+        accounts = web3.eth.accounts;
+        document.getElementById('firstBeneficiary').value = accounts[1];
+        document.getElementById('secondBeneficiary').value = accounts[2];
     }
 };
 
