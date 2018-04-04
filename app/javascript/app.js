@@ -10,6 +10,7 @@ let web3 = window.web3;
 window.App = {
     start: function () {
         this.networkId = web3.version.network;
+        this.setNetworkLabel();
         this.initializeContract();
         this.setInitialAddresses();
         this.setBalance();
@@ -152,6 +153,22 @@ window.App = {
         } else {
             document.getElementById('loader').style.visibility = 'hidden';
         }
+    },
+    setNetworkLabel: function() {
+        const networkEl = document.getElementById('network');
+        let text;
+        let color;
+
+        if (this.network === 3) {
+            text = 'Ropsten';
+            color = 'red';
+        } else {
+            text = 'TestRpc';
+            color = 'black';
+        }
+
+        networkEl.innerText = `Network: ${text}`;
+        networkEl.style.color = color;
     }
 };
 
