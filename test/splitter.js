@@ -30,45 +30,45 @@ contract('Splitter', async accounts => {
             it("should fail with 0 value", async () => {                
                 try {
                     hasSplit = await instance.split(firstBeneficiary, secondBeneficiary, { from: sender });
+                    assert.isUndefined(hasSplit, 'with 0 value split return something');
                 } catch (err) {
                     assert.include(err.message, 'revert', 'no revert with 0 value');
-                    assert.isUndefined(hasSplit, 'with 0 value split return something');
                 }
             });
 
             it('should fail with odd value', async () => {
                 try {
                     hasSplit = await instance.split(firstBeneficiary, secondBeneficiary, { value: 3 });
+                    assert.isUndefined(hasSplit, 'with odd value split return something');
                 } catch (err) {
                     assert.include(err.message, 'revert', 'no revert with odd value');
-                    assert.isUndefined(hasSplit, 'with odd value split return something');
                 }
             });
 
             it('should fail if sender is firstBeneficiary', async() => {
                 try {
                     hasSplit = await instance.split(firstBeneficiary, secondBeneficiary, { value: 2, from: firstBeneficiary });
+                    assert.isUndefined(hasSplit, 'if sender is the first beneficiary split return something');
                 } catch (err) {
                     assert.include(err.message, 'revert', 'no revert if sender is the first beneficiary');
-                    assert.isUndefined(hasSplit, 'if sender is the first beneficiary split return something');
                 }
             });
 
             it('should fail if sender is secondBeneficiary', async() => {
                 try {
                     hasSplit = await instance.split(firstBeneficiary, secondBeneficiary, { value: 2, from: secondBeneficiary });
+                    assert.isUndefined(hasSplit, 'if sender is the second beneficiary split return something');
                 } catch (err) {
                     assert.include(err.message, 'revert', 'no revert if sender is the second beneficiary');
-                    assert.isUndefined(hasSplit, 'if sender is the second beneficiary split return something');
                 }
             });
 
             it('should fail if firstBeneficiary is secondBeneficiary', async() => {
                 try {
                     hasSplit = await instance.split(firstBeneficiary, firstBeneficiary, { value: 2, from: sender });
+                    assert.isUndefined(hasSplit, 'if firstBeneficiary is secondBeneficiary split return something');
                 } catch (err) {
                     assert.include(err.message, 'revert', 'no revert if firstBeneficiary is secondBeneficiary');
-                    assert.isUndefined(hasSplit, 'if firstBeneficiary is secondBeneficiary split return something');
                 }
             });
         });
