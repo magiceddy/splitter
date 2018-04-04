@@ -42,5 +42,6 @@ Run the webpack server for front-end
 - [ ] improove control on potentially bad input data
 - [ ] Deploy on IPFS
 - [ ] Deploy on Ropsten with truffle migrate
+- [ ] Add comments
 
 
