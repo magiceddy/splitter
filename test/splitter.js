@@ -179,4 +179,28 @@ contract('Splitter', async accounts => {
             });
         });
     });
+
+    describe('kill function', async () => {
+
+        describe('fail case', async () => {
+
+            it('should fail on no owner call', async () => {
+                try {
+                    const hasKill = await instance.kill({ from: firstBeneficiary });
+                    assert.isUndefined(hasKill, 'anyone can kill my contract')
+                } catch(err) {
+                    assert.include(err.message, 'revert', 'no revert if anyone kill my contract');
+                }
+            });
+        });
+
+        describe('success case', async () => {
+
+            it('owner can kill my contract', async () => {
+                await instance.kill({ from: sender });
+                const owner = await instance.owner();
+                assert.equal(owner, '0x0', 'kill was not performed');
+            })
+        });
+    });
 });
