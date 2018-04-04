@@ -203,4 +203,24 @@ contract('Splitter', async accounts => {
             })
         });
     });
+
+    describe('fallback function', async () => {
+
+        it('should call fallback when calling contract with no implemented funciton', async () => {
+            const initialFirstBeneficiaryBalance = await web3.eth.getBalance(firstBeneficiary);
+            await instance.send(5);
+
+            const contractBalance = await web3.eth.getBalance(instance.address);
+            const currentFirstBeneficiaryBalance = await web3.eth.getBalance(firstBeneficiary);
+    
+            assert.equal(
+                currentFirstBeneficiaryBalance.toString(10), 
+                initialFirstBeneficiaryBalance.toString(10),
+                'calling the fallback did not refund sender'
+            );
+
+            assert.equal(contractBalance.toString(10), 0, 'contract has found after call fallback');
+        });
+
+    });
 });
