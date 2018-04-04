@@ -5,6 +5,21 @@ contract Splitter {
 
     address public owner;
 
+    modifier noAutoSend(address _address) {
+        require(_address != msg.sender);
+        _;
+    }
+
+    modifier noEmptyAddress(address _address) {
+        require(_address != address(0x00));
+        _;
+    }
+
+    modifier noHomonymy(address first, address second) {
+        require(first != second);
+        _;
+    }
+
     event LogSplit(
         address indexed from, 
         address indexed firstBeneficiary, 
@@ -22,19 +37,18 @@ contract Splitter {
     function split(address firstBeneficiary, address secondBeneficiary)
         public
         payable
+        noAutoSend(firstBeneficiary)
+        noAutoSend(secondBeneficiary)
+        noEmptyAddress(firstBeneficiary)
+        noEmptyAddress(secondBeneficiary)
+        noHomonymy(firstBeneficiary, secondBeneficiary)
         returns (bool) 
     {
         require(msg.value > 0);
         require(msg.value % 2 == 0);
-        require(firstBeneficiary != msg.sender);
-        require(secondBeneficiary != msg.sender);
-        require(firstBeneficiary != address(0x00));
-        require(secondBeneficiary != address(0x00));
-        require(firstBeneficiary != secondBeneficiary);
         
         uint256 amountPerSingleUser = msg.value / 2;
         
-
         firstBeneficiary.transfer(amountPerSingleUser);
         secondBeneficiary.transfer(amountPerSingleUser);
 
@@ -54,7 +68,7 @@ contract Splitter {
         selfdestruct(owner);
     }
 
-    function() {
+    function() public payable {
         msg.sender.transfer(msg.value);
     }
 }
