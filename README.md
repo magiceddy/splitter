@@ -27,6 +27,10 @@ Run the webpack server for front-end
 
 7. `npm run dev`
 
+#### Test
+`truffle test`
+
+
 ### You can also connect with metamask on Ropsten Network
 
 ### TODO
@@ -37,5 +41,6 @@ Run the webpack server for front-end
 - [ ] ?? rebuild the Splitter instance state only based on events.
 - [ ] improove control on potentially bad input data
 - [ ] Deploy on IPFS
+- [ ] Deploy on Ropsten with truffle migrate
 
 
