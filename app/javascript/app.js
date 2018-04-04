@@ -6,72 +6,152 @@ const contract = require('truffle-contract');
 const Web3 = require('web3'); 
 
 let web3 = window.web3;
-let accounts;
-let instance;
-
-const splitter = contract(Splitter); 
 
 window.App = {
-    start: async function() {
-        splitter.setProvider(web3.currentProvider);
-        
-        this.instance = await splitter.deployed();
-        this.startConfig();
-        this.registerEvents();
+    start: function () {
+        this.networkId = web3.version.network;
+        this.initializeContract();
+        this.setInitialAddresses();
+        this.setBalance();
+        this.setAmount();
+        this.tryAbleSend();
+    },
+    initializeContract: async function() {
+        this.splitter = contract(Splitter);
+        this.splitter.setProvider(web3.currentProvider);
+
+        if (this.networkId == 3) {
+            const splitterAddress = "0x24b299e594d6AFFFBd47467Fe99BaF7b4c7d9115";
+            this.instance = this.splitter.at(splitterAddress);
+        } else {
+            this.instance = await this.splitter.deployed();
+        }
+    },
+    setInitialAddresses: function() {
+        this.setSender();
+        this.setBeneficiaries();
+    },
+    setSender: function() {
+        this.sender = web3.eth.coinbase;
+        document.getElementById('coinbase').innerHTML = this.sender;
+    },
+    setBeneficiaries: function() {
+        const accountsFromUI = this.getCurrentAddressiesFromUi();
+        const accounts = web3.eth.accounts;
+        const firstBen = accounts[1] || accountsFromUI.firstBeneficiary || false;
+        const secondBen = accounts[2] || accountsFromUI.secondBeneficiary || false;
+
+        if (firstBen) {
+            document.getElementById('firstBeneficiary').value = firstBen;
+        }
+        if (secondBen) {
+            document.getElementById('secondBeneficiary').value = secondBen;
+        }
+    },
+    setBalance: function() {
+        const addresses = this.getCurrentAddressiesFromUi();
+
+        if (addresses.sender) {
+            web3.eth.getBalance(addresses.sender, function(err, _balance) {
+                if (err) {
+                    console.error(err);
+                } else {
+                    const senderBalance = web3.fromWei(_balance, 'ether').toString(10);
+                    document.getElementById('senderBalance').innerText = senderBalance + " ETH";
+                }
+            });  
+        }
+
+        if (addresses.firstBeneficiary) {
+            web3.eth.getBalance(addresses.firstBeneficiary, function(err, _balance) {
+                if (err) {
+                    console.error(err);
+                } else {
+                    const firstBalance = web3.fromWei(_balance, 'ether').toString(10);
+                    document.getElementById('firstBalance').innerText = firstBalance + " ETH";
+                }
+            }); 
+        }
+
+        if (addresses.secondBeneficiary) {
+            web3.eth.getBalance(addresses.secondBeneficiary, function(err, _balance) {
+                if (err) {
+                    console.error(err);
+                } else {
+                    const secondBalance = web3.fromWei(_balance, 'ether').toString(10);
+                    document.getElementById('secondBalance').innerText = secondBalance + " ETH";
+                }
+            });
+        }
+        this.tryAbleSend();
+    },
+    getCurrentAddressiesFromUi: function() {
+        return {
+            sender: this.chekAddressesValidity(document.getElementById('coinbase').innerHTML),
+            firstBeneficiary: this.chekAddressesValidity(document.getElementById('firstBeneficiary').value),
+            secondBeneficiary: this.chekAddressesValidity(document.getElementById('secondBeneficiary').value)
+        }
+    },
+    chekAddressesValidity: function(_address) {
+        return web3.isAddress(_address) ? _address : false;
     },
     send: async function() {
-        const sender = document.getElementById('coinbase').value;
-        const ben1 = document.getElementById('firstBeneficiary').value;
-        const ben2 = document.getElementById('secondBeneficiary').value;
-        const amount = web3.toBigNumber(document.getElementById('amount').value);
-        const amountInWei = web3.toWei(amount, 'ether');
-
-        const txObject = await this.instance.split(ben1, ben2, { from: sender, value: amountInWei });
+        const addresses = this.getCurrentAddressiesFromUi();
+        
+        if (this.sendAbled) {
+            this.toggleLoaderVisibility();
+            const txObject = await this.instance.split(
+                addresses.firstBeneficiary, addresses.secondBeneficiary, 
+                { from: addresses.sender, value: this.amountInWei }
+            );
+            this.toggleLoaderVisibility();
+            location.reload();        }
     },
-    startConfig: function() {
-        this.coinbase = web3.eth.coinbase;
-
-        document.getElementById('coinbase').value = this.coinbase;
-
-        return web3.version.network == 3 ? 
-            this.configForRopsten() : 
-            this.configForTestRpc();
+    sendAbled: function() {
+        const addresses = this.getCurrentAddressiesFromUi();
+        return addresses.sender && addresses.firstBeneficiary && 
+            addresses.secondBeneficiary && this.amountInWei   ?
+            true : false;
     },
-    configForRopsten: function() {},
-    configForTestRpc: function() {
-        this.accounts = web3.eth.accounts;
-
-        document.getElementById('firstBeneficiary').value = this.accounts[1];
-        document.getElementById('secondBeneficiary').value =this.accounts[2];
-        document.getElementById('network').innerText = "Network: Local TestRpc";
-
-        this.setBalance();
+    setAmount: function() {
+        try {
+            const amount = web3.toBigNumber(document.getElementById('amount').value);
+            this.amountInWei = web3.toWei(amount, 'ether');
+            this.tryAbleSend();
+        } catch(err) {
+            document.getElementById('amount').value = "insert an Ethereum value";
+        };
+    },
+    tryAbleSend: function() {
+        const abled = this.sendAbled();
+        document.getElementById('sendButton').disabled = !abled;
     },
     onAddressChange: function(event) {
-        console.log(event);
-    },
-    setBalance: async function () {
-        const senderBalanceInWei = await web3.eth.getBalance(this.coinbase);
-        const firstBalanceInWei = await web3.eth.getBalance(this.accounts[1]);
-        const secondBalanceInWei = await web3.eth.getBalance(this.accounts[2]);
-        const senderBalance = web3.fromWei(senderBalanceInWei, 'ether').toString(10);
-        const firstBalance = web3.fromWei(firstBalanceInWei, 'ether').toString(10);
-        const secondBalance = web3.fromWei(secondBalanceInWei, 'ether').toString(10);
-
-        document.getElementById('senderBalance').innerText = senderBalance + " ETH";
-        document.getElementById('firstBalance').innerText = firstBalance + " ETH";
-        document.getElementById('secondBalance').innerText = secondBalance + " ETH";
-        
+        if (this.chekAddressesValidity(event.value)) {
+            this.setBalance();
+        } else {
+            document.getElementById(event.id).value = "Indirizzo non corretto";
+        }
     },
     registerEvents: function() {
         const self = this;
         var event = self.instance.LogSplit({ fromBlock: 0, toBlock: 'latest'});
-
+        
         event.watch(function(err, res) {
-            if (!err) {
-                self.setBalance();
+            if (err) {
+                console.log('ciao');
+                console.error(err);
             }
         });
+    },
+    toggleLoaderVisibility: function() {
+        const style = window.getComputedStyle(document.getElementById('loader'));
+        
+        if (style.visibility == 'hidden') {
+            document.getElementById('loader').style.visibility = 'visible';
+        } else {
+            document.getElementById('loader').style.visibility = 'hidden';
+        }
     }
 };
 
