@@ -23,6 +23,23 @@ contract('Splitter', async accounts => {
         assert.strictEqual(sender, contractOwner, 'The creator is not the owner');
     });
 
+    it('should refund in case of creation with value', async () => {
+        const initialSenderBalance = await web3.eth.getBalance(sender);
+        const ValueInstance = await Splitter.new({ value: 10 });
+        const balance = await web3.eth.getBalance(ValueInstance.address);
+        const currentSenderBalance = await web3.eth.getBalance(sender);
+
+        const txObject = web3.eth.getTransactionReceipt(ValueInstance.transactionHash);
+
+        const gasUsed = txObject.gasUsed;
+        const transaction = await web3.eth.getTransaction(ValueInstance.transactionHash);
+        const gasPrice = transaction.gasPrice;
+        const txFee = gasPrice.times(gasUsed);
+
+        assert.equal(balance, 0, 'contract has balance after creation');
+        assert.equal(currentSenderBalance.plus(txFee).toString(10), initialSenderBalance, 'sender was not refund');
+    });
+
     describe('split function', async () => {
 
         describe('fail cases', async () => {
