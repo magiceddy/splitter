@@ -68,7 +68,5 @@ contract Splitter {
         selfdestruct(owner);
     }
 
-    function() public payable {
-        msg.sender.transfer(msg.value);
-    }
+    function() public {}
 }
