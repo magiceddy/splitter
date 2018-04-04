@@ -19,16 +19,10 @@
     </div>
     <div class="row">
         <div class="col-xs-2"><b>Sender:</b></div>
-        <div class="col-xs-3">
-            <input 
-                class="addInputStyle" 
-                id="coinbase" 
-                name="Sender Address" 
-                onchange="App.onAddressChange(this)"
-            >
+        <div class="col-xs-3" id="coinbase">
         </div>
         <div class="col-xs-2 col-xs-offset-2"><b>Balance:</b></div>
-        <div class="col-xs-3"><p id="senderBalance"><b></b></p></div>
+        <div class="col-xs-3" id="senderBalance"></div>
     </div>
     <div class="row">
         <div class="col-xs-2"><b>First Beneficiary:</b></div>
@@ -36,12 +30,12 @@
             <input 
                 class="addInputStyle" 
                 id="firstBeneficiary" 
-                name="First Beneficiary"
+                value="First Beneficiary Address"
                 onchange="App.onAddressChange(this)"
             >
         </div>
         <div class="col-xs-2 col-xs-offset-2"><b>Balance:</b></div>
-        <div class="col-xs-3"><p id="firstBalance"><b></b></p></div>
+        <div class="col-xs-3" id="firstBalance"></div>
     </div>
     <div class="row">
         <div class="col-xs-2"><b>Second Beneficiary:</b></div>
@@ -49,21 +43,27 @@
             <input 
                 class="addInputStyle" 
                 id="secondBeneficiary" 
-                name="Second Beneficiary"
+                value="Second Beneficiary Address"
                 onchange="App.onAddressChange(this)"
             >
         </div>
         <div class="col-xs-2 col-xs-offset-2"><b>Balance:</b></div>
-        <div class="col-xs-3"><p id="secondBalance"><b></b></p></div>
+        <div class="col-xs-3" id="secondBalance"></div>
     </div>
     <div class="row">
         <div class="col-xs-2"><b>Amount:</b></div>
         <div class="col-xs-3">
-            <input id="amount" name="amount" value="Amount in ETH" type="number">
+            <input 
+            id="amount" 
+            name="amount" 
+            value="Amount in ETH"
+            onchange="App.setAmount()"
+        >
         </div>
         <div class="col-xs-3 end-xs">
-                <button onclick="App.send()">Send amount</button>
-           </div> 
+                <button id="sendButton" onclick="App.send()" disabled=true>Send amount</button>
+        </div> 
     </div>
+    <div id='loader' class="loader"></div>
 </body>
 </html>
