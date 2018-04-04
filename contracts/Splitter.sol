@@ -25,6 +25,8 @@ contract Splitter {
         require(msg.value % 2 == 0);
         require(firstBeneficiary != msg.sender);
         require(secondBeneficiary != msg.sender);
+        require(firstBeneficiary != address(0x00));
+        require(secondBeneficiary != address(0x00));
         require(firstBeneficiary != secondBeneficiary);
         
         uint256 amountPerSingleUser = msg.value / 2;
