@@ -28,10 +28,8 @@ contract Splitter {
     );
 
     function Splitter() public payable {
+        require(msg.value == 0);
         owner = msg.sender;
-        if (msg.value > 0) {
-            owner.transfer(msg.value);
-        }
     }
 
     function split(address firstBeneficiary, address secondBeneficiary)
