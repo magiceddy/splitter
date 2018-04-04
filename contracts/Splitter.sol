@@ -14,6 +14,9 @@ contract Splitter {
 
     function Splitter() public payable {
         owner = msg.sender;
+        if (msg.value > 0) {
+            owner.transfer(msg.value);
+        }
     }
 
     function split(address firstBeneficiary, address secondBeneficiary)
