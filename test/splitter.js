@@ -71,6 +71,24 @@ contract('Splitter', async accounts => {
                     assert.include(err.message, 'revert', 'no revert if firstBeneficiary is secondBeneficiary');
                 }
             });
+
+            it('should fail if firstBeneficiary is not present', async() => {
+                try {
+                    hasSplit = await instance.split('0x00', secondBeneficiary, { value: 2, from: sender });
+                    assert.isUndefined(hasSplit, 'if firstBeneficiary is not present split return something');
+                } catch (err) {
+                    assert.include(err.message, 'revert', 'no revert if firstBeneficiary is secondBeneficiary');
+                }
+            });
+
+            it('should fail if secondBeneficiary is not present', async() => {
+                try {
+                    hasSplit = await instance.split(firstBeneficiary, '0x00', { value: 2, from: sender });
+                    assert.isUndefined(hasSplit, 'if firstBeneficiary is not present split return something');
+                } catch (err) {
+                    assert.include(err.message, 'revert', 'no revert if firstBeneficiary is secondBeneficiary');
+                }
+            });
         });
 
         describe('success case', async () => {
