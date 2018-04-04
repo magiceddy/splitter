@@ -53,4 +53,8 @@ contract Splitter {
         require(msg.sender == owner);
         selfdestruct(owner);
     }
+
+    function() {
+        msg.sender.transfer(msg.value);
+    }
 }
