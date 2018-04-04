@@ -27,4 +27,15 @@ Run the webpack server for front-end
 
 7. `npm run dev`
 
+### You can also connect with metamask on Ropsten Network
+
+### TODO
+
+- [ ] Migrate to Ropsten last contract ' s version
+- [ ] Solution for fallback test case
+- [ ] Improve UI
+- [ ] ?? rebuild the Splitter instance state only based on events.
+- [ ] improove control on potentially bad input data
+- [ ] Deploy on IPFS
+
 
