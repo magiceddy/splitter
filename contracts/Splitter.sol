@@ -1,24 +1,9 @@
 pragma solidity 0.4.19;
 
-
 contract Splitter {
 
     address public owner;
-
-    modifier noAutoSend(address _address) {
-        require(_address != msg.sender);
-        _;
-    }
-
-    modifier noEmptyAddress(address _address) {
-        require(_address != address(0x00));
-        _;
-    }
-
-    modifier noHomonymy(address first, address second) {
-        require(first != second);
-        _;
-    }
+    bool private alreadyPaid;
 
     event LogSplit(
         address indexed from, 
@@ -27,28 +12,28 @@ contract Splitter {
         uint256 amount
     );
 
-    function Splitter() public payable {
-        require(msg.value == 0);
+    function Splitter() public {
         owner = msg.sender;
     }
 
     function split(address firstBeneficiary, address secondBeneficiary)
         public
         payable
-        noAutoSend(firstBeneficiary)
-        noAutoSend(secondBeneficiary)
-        noEmptyAddress(firstBeneficiary)
-        noEmptyAddress(secondBeneficiary)
-        noHomonymy(firstBeneficiary, secondBeneficiary)
         returns (bool) 
     {
-        require(msg.value > 0);
-        require(msg.value % 2 == 0);
-        
+
+        if (!safeBeneficiaries(firstBeneficiary, secondBeneficiary)) {
+            revert();
+        } else if (!noSelfPay(firstBeneficiary, secondBeneficiary)) {
+            revert();
+        } else if (!safeAmount(msg.value) ) {
+            revert();
+        }
+
         uint256 amountPerSingleUser = msg.value / 2;
-        
-        firstBeneficiary.transfer(amountPerSingleUser);
-        secondBeneficiary.transfer(amountPerSingleUser);
+
+        pay(firstBeneficiary, amountPerSingleUser);
+        pay(secondBeneficiary, amountPerSingleUser);
 
         assert(address(this).balance == 0);
         
@@ -61,9 +46,35 @@ contract Splitter {
         return true;
     }
 
-    function kill() public {
+    function pay(address beneficiary, uint amount) private {
+        if(!alreadyPaid) {
+            alreadyPaid = true;
+            beneficiary.transfer(amount);
+            alreadyPaid = false;
+        }
+    } 
+
+    function safeBeneficiaries(address a, address b) private pure returns (bool) {
+        require(a != b);
+        require(a != address(0x00) && b != address(0x00));
+        return true;
+    }
+
+    function noSelfPay(address a, address b) private view returns (bool) {
+        require(a != msg.sender && b != msg.sender);
+        return true;
+    }
+
+    function safeAmount(uint256 amount) private pure returns (bool) {
+        require(amount > 0);
+        require(amount % 2 == 0);
+        return true;
+    }
+
+    function kill(address refund) public returns (bool) {
         require(msg.sender == owner);
-        selfdestruct(owner);
+        selfdestruct(refund);
+        return true;
     }
 
     function() public {}
